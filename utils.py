@@ -4,15 +4,28 @@ author: jarvis
 time: 2021-5-1
 Attention: we will use "tmp" dir to keep ts files
 """
-
 import m3u8
 import urllib.request
 import os
 import logging
 import shutil
+from win32com.client import Dispatch
 
-logging.basicConfig(level=logging.DEBUG)
+
 logger = logging.getLogger(__name__)
+
+
+def use_thunder_download(url, filename):
+    """
+    use thunder downloading
+    :param url:
+    :param filename:
+    :return: none
+    """
+    print('use thunder downloading...')
+    thunder = Dispatch('ThunderAgent.Agent64.1')
+    thunder.AddTask(url, filename)
+    thunder.CommitTasks()
 
 
 def downloader(url):
@@ -51,11 +64,3 @@ def make_ts_2_mp4(file_name):
             with open(os.path.join("tmp", i), 'rb') as g:
                 a_ts = g.read()
             f.write(a_ts)
-
-
-def one_class_web_parser():
-    pass
-
-
-if __name__ == "__main__":
-    pass

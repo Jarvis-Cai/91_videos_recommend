@@ -5,29 +5,24 @@
 import random
 from lxml import etree
 import requests, js2py, re
-from win32com.client import Dispatch
 import csv
 import utils
+import logging
+import web_parser
+
+logging.basicConfig(level=logging.INFO)
 
 
-def use_thunder_download(url, filename):
-    """
-    use thunder downloading
-    :param url:
-    :param filename:
-    :return: none
-    """
-    print('use thunder downloading...')
-    thunder = Dispatch('ThunderAgent.Agent64.1')
-    thunder.AddTask(url, filename)
-    thunder.CommitTasks()
-
-
-def enter_second_page(url, headers, js):
-    global res
+def enter_second_page(url, headers):
     s = requests.session()
     s.keep_alive = False
     get_page = s.get(url=url, headers=headers, verify=False).content.decode('utf-8')
+    jsdata = s.get(IP_address + "/js/m.js").text
+    print(jsdata)
+    js = js2py.EvalJs()
+    js.execute(jsdata)
+    # print(get_page)
+
     url = parse_url_in_second_page(get_page, js)  # 这个用了js加密处理
 
     key = etree.HTML(get_page)
@@ -38,7 +33,7 @@ def enter_second_page(url, headers, js):
     film_collection = key.xpath('//*[@id="useraction"]/div[1]/span[4]/span/text()')[0].strip()
     score = round(int(film_collection) / int(film_view) * 1000, 2)
     title = title + '(' + str(score) + ')' + '.mp4'
-    print(url)
+    print("second", url)
     # res.append((title, url[0]))
     # use_thunder_download(url[0], title)  # maybe we should choose which one to download
     utils.downloader(url)
@@ -76,18 +71,15 @@ def parse_url_in_second_page(get_page, js):
     ifm = re.findall('strencode2\((.*?)\)', get_page)
     ifm[0] = ifm[0].replace('"', '')
     print(ifm)
-    ifm = js.strencode(ifm[0])  # this is object url
+    ifm = js.strencode(ifm[0])#.split(',')[0])#, ifm[0].split(',')[1], ifm[0].split(',')[2])  # this is object url
     print(ifm, '嘻嘻')
-    video_url = re.findall(r"<source src='(.*?)' type=\"application/x-mpegURL\">", ifm)
+    video_url = re.findall(r"<source src='(.*?)' type=\'application/x-mpegURL\'>", ifm)
     return video_url  # 这是一个元素的list
 
 
 def main(page_num=3, threshold_score=3, flag=1, catalogue_url=None):
     """"""
     requests.adapters.DEFAULT_RETRIES = 5  # 增加重连次数
-    jsdata = requests.get(IP_address+"/js/m.js").text
-    js = js2py.EvalJs()
-    js.execute(jsdata)
     global res
     res = []
     video_cnt = 0
@@ -113,7 +105,8 @@ def main(page_num=3, threshold_score=3, flag=1, catalogue_url=None):
             if score >= threshold_score:  # 比较阈值
                 video_cnt += 1
                 show_videos_info(url, title, film_view, film_collection, score, author)
-                enter_second_page(url, headers, js)
+                # enter_second_page(url, headers)
+                web_parser.parse_two_class_web(url, headers)
                 print("video_cnt:", video_cnt)
         flag += 1
     write_info_to_csv(res)
@@ -122,7 +115,7 @@ def main(page_num=3, threshold_score=3, flag=1, catalogue_url=None):
 if __name__ == '__main__':
     page_num = 1  # 设置爬取网页数upper bound，total 5
     flag = 1  # from which page begin
-    threshold_score = 15  # 设置下载视频阈值
+    threshold_score = 17  # 设置下载视频阈值
     IP_address = 'http://810.workarea7.live'
     # IP_address = 'http://www.91porn.com'
     this_month_most_hot_page = IP_address + '/v.php?category=top&viewtype=basic&page='  # 本月最热视频展示页
