@@ -1,16 +1,20 @@
 from unittest import TestCase
 import unittest
+import logging
+
 import sys
-sys.path.append("..")
+sys.path.append("../")
 import utils
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 class Test(TestCase):
     def test_downloader(self):
-        utils.downloader('https://cdn.91p07.com//m3u8/462096/462096.m3u8?st=6eSUS5im7OKlQO3BWV3-tA&e=1619859687')
+        utils.downloader('https://la.killcovid2021.com/m3u8/591161/591161.m3u8')
 
     def test_make_ts_2_mp4(self):
-        utils.make_ts_2_mp4("2.mp4")
+        utils.make_ts_2_mp4("test.mp4")
 
 
 if __name__ == '__main__':

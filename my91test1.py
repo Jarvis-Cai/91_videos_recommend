@@ -115,8 +115,8 @@ def main(page_num=3, threshold_score=3, flag=1, catalogue_url=None):
 if __name__ == '__main__':
     page_num = 1  # 设置爬取网页数upper bound，total 5
     flag = 1  # from which page begin
-    threshold_score = 17  # 设置下载视频阈值
-    IP_address = 'http://810.workarea7.live'
+    threshold_score = 10  # 设置下载视频阈值
+    IP_address = 'https://0118.workarea7.live/'
     # IP_address = 'http://www.91porn.com'
     this_month_most_hot_page = IP_address + '/v.php?category=top&viewtype=basic&page='  # 本月最热视频展示页
     last_month_most_hot_page = IP_address + '/v.php?category=top&m=-1&viewtype=basic&page='  # 上月最热视频展示页
