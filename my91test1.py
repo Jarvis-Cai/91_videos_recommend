@@ -68,6 +68,7 @@ def main(page_num=3, threshold_score=3, flag=1, catalogue_url=None):
             if score >= threshold_score:  # 比较阈值
                 video_cnt += 1
                 show_videos_info(url, title, film_view, film_collection, score, author)
+                res.append([title + "({})".format(score), url])
                 # enter_second_page(url, headers)
                 web_parser.parse_two_class_web(url, headers)
                 print("video_cnt:", video_cnt)

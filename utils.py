@@ -4,27 +4,46 @@ author: jarvis
 time: 2021-5-1
 Attention: we will use "tmp" dir to keep ts files
 """
-import m3u8
-import urllib.request
-import os
 import logging
+import os
 import shutil
-from win32com.client import Dispatch
-import win32api
-import subprocess
+import urllib.request
 
+import m3u8
+import win32event
+import win32process
+from win32com.client import Dispatch
 
 logger = logging.getLogger(__name__)
 
 
 def download_by_tool(url, filename):
-    exe_path = r"E:\迅雷下载\91pron_python-main\N_m3u8DL-CLI_v2.9.7.exe"
-    your_command = r'"{}" --workDir "E:\tmp" --saveName "{}" --enableDelAfterDone'.format(url, filename)
-    last_shell = exe_path + " " + your_command
-    aa = r"E:\迅雷下载\91pron_python-main\N_m3u8DL-CLI_v2.9.7.exe https://cdn.91p07.com//m3u8/442236/442236.m3u8?st=xZMvsTd-PuHmhqdLU1DwnQ&e=1619871695 --workDir E:\tmp --saveName aaabbb --enableDelAfterDone"
-    bb = ["E:\迅雷下载\91pron_python-main\\N_m3u8DL-CLI_v2.9.7.exe", "https://cdn.91p07.com//m3u8/442236/442236.m3u8?st=xZMvsTd-PuHmhqdLU1DwnQ&e=1619871695","--workDir E:\\tmp","--saveName aaabbb","--enableDelAfterDone"]
-    p = subprocess.call(bb)
-    p.wait()
+    exe_path = r"E:\\迅雷下载\\91pron_python-main\\m3u8DL-CLI\\N_m3u8DL-CLI_v2.9.7.exe"
+    your_command = r' "{}" --workDir "E:\\tmp" --saveName "{}" --enableDelAfterDone'.format(url, filename)
+    test_com = r" https://la.killcovid2021.com/m3u8/591161/591161.m3u8 --workDir E:\\tmp --saveName success --enableDelAfterDone"
+    try:
+        handle = win32process.CreateProcess(exe_path,
+                                            your_command,
+                                            None,
+                                            None,
+                                            0,
+                                            win32process.CREATE_NO_WINDOW,
+                                            None,
+                                            r"E:\\迅雷下载\\91pron_python-main\\m3u8DL-CLI",
+                                            win32process.STARTUPINFO())
+        running = True
+    except Exception as Argument:
+        logging.info("Create Error!", Argument)
+        handle = None
+        running = False
+
+    while running:
+        rc = win32event.WaitForSingleObject(handle[0], 1000)
+        if rc == win32event.WAIT_OBJECT_0:
+            running = False
+    # end while
+    print("finish!")
+
 
 def use_thunder_download(url, filename):
     """
@@ -79,4 +98,4 @@ def make_ts_2_mp4(file_name):
 
 
 if __name__ == "__main__":
-    download_by_tool("https://cdn.91p07.com//m3u8/442236/442236.m3u8?st=xZMvsTd-PuHmhqdLU1DwnQ&e=1619871695", "aaa")
+    download_by_tool("https://la.killcovid2021.com/m3u8/591161/591161.m3u8", "aaa")

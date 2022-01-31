@@ -212,10 +212,11 @@ encode_version = strencode2;"""
     film_view = key.xpath('//*[@id="useraction"]/div[1]/span[2]/span/text()')[0].strip()
     film_collection = key.xpath('//*[@id="useraction"]/div[1]/span[4]/span/text()')[0].strip()
     score = round(int(film_collection) / int(film_view) * 1000, 2)
-    title = title + '(' + str(score) + ')' + '.mp4'
-    logger.debug("second url:", url)
-    utils.downloader(url)
-    utils.make_ts_2_mp4(title)
+    title = title + '(' + str(score) + ')'
+    print("downloading url:", url)
+    # utils.downloader(url)
+    # utils.make_ts_2_mp4(title)
+    utils.download_by_tool(url, title)
 
 
 @DeprecationWarning
