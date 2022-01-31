@@ -9,6 +9,7 @@ from lxml import etree
 import js2py
 import utils
 import logging
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -213,6 +214,46 @@ encode_version = strencode2;"""
     score = round(int(film_collection) / int(film_view) * 1000, 2)
     title = title + '(' + str(score) + ')' + '.mp4'
     logger.debug("second url:", url)
+    utils.downloader(url)
+    utils.make_ts_2_mp4(title)
+
+
+@DeprecationWarning
+def parse_url_in_second_page(get_page, js):
+    """解决js加密问题"""
+    ifm = re.findall('strencode2\((.*?)\)', get_page)
+    ifm[0] = ifm[0].replace('"', '')
+    print(ifm)
+    ifm = js.strencode(ifm[0])#.split(',')[0])#, ifm[0].split(',')[1], ifm[0].split(',')[2])  # this is object url
+    print(ifm, '嘻嘻')
+    video_url = re.findall(r"<source src='(.*?)' type=\'application/x-mpegURL\'>", ifm)
+    return video_url  # 这是一个元素的list
+
+
+@DeprecationWarning
+def enter_second_page(url, headers):
+    s = requests.session()
+    s.keep_alive = False
+    get_page = s.get(url=url, headers=headers, verify=False).content.decode('utf-8')
+    jsdata = s.get("IP_address" + "/js/m.js").text
+    print(jsdata)
+    js = js2py.EvalJs()
+    js.execute(jsdata)
+    # print(get_page)
+
+    url = parse_url_in_second_page(get_page, js)  # 这个用了js加密处理
+
+    key = etree.HTML(get_page)
+    title = key.xpath('//*[@id="videodetails"]/h4/text()')[0].strip()
+    # url = key.xpath('//*[@id="player_one_html5_api"]/source/@src')[0]  # //*[@id="player_one_html5_api"]/source
+    # author = key.xpath('./text()[9]')[0].lstrip()
+    film_view = key.xpath('//*[@id="useraction"]/div[1]/span[2]/span/text()')[0].strip()
+    film_collection = key.xpath('//*[@id="useraction"]/div[1]/span[4]/span/text()')[0].strip()
+    score = round(int(film_collection) / int(film_view) * 1000, 2)
+    title = title + '(' + str(score) + ')' + '.mp4'
+    print("second", url)
+    # res.append((title, url[0]))
+    # use_thunder_download(url[0], title)  # maybe we should choose which one to download
     utils.downloader(url)
     utils.make_ts_2_mp4(title)
 
