@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 def download_by_tool(url, filename):
-    exe_path = r"E:\\迅雷下载\\91pron_python-main\\m3u8DL-CLI\\N_m3u8DL-CLI_v2.9.7.exe"
+    exe_path = r"E:\\迅雷下载\\91pron_python-main\\m3u8DL-CLI\\N_m3u8DL-CLI_v2.9.1.exe"
     your_command = r' "{}" --workDir "E:\\tmp" --saveName "{}" --enableDelAfterDone'.format(url, filename)
     test_com = r" https://la.killcovid2021.com/m3u8/591161/591161.m3u8 --workDir E:\\tmp --saveName success --enableDelAfterDone"
     try:

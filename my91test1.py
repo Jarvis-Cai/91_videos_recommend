@@ -59,10 +59,18 @@ def main(page_num=3, threshold_score=3, flag=1, catalogue_url=None):
         html = etree.HTML(get_page.text)
         viewkey = html.xpath('//div[@class="col-xs-12 col-sm-4 col-md-3 col-lg-3"]')
         for key in viewkey:
-            title = key.xpath('./div/a/span[@class="video-title title-truncate m-t-5"]/text()')[0].strip()  #
+            title = key.xpath('./div/a/span/text()')[0].strip() #//*[@id="wrapper"]/div[1]/div[3]/div/div/div[3]/div/a/span
+            # print(title)
+            # a = key.xpath('./div/text()')
+            # for i,c in enumerate(a):
+            #     print(i, c)
+            # print(key.xpath('./div/text()[9]'))
             author = key.xpath('./div/text()[6]')[0].strip()
+            # print('author', author)
             film_view = key.xpath('./div/text()[8]')[0].strip()
+            # print('film_view',film_view)
             film_collection = key.xpath('./div/text()[9]')[0].strip()
+            # print('film_collection', film_collection)
             score = round(int(film_collection) / int(film_view) * 1000, 2)
             url = key.xpath("./div/a/@href")[0]  # 获得具体视频内容页面链接
             if score >= threshold_score:  # 比较阈值
@@ -70,7 +78,8 @@ def main(page_num=3, threshold_score=3, flag=1, catalogue_url=None):
                 show_videos_info(url, title, film_view, film_collection, score, author)
                 res.append([title + "({})".format(score), url])
                 # enter_second_page(url, headers)
-                web_parser.parse_two_class_web(url, headers)
+                if video_cnt > 0:
+                    web_parser.parse_two_class_web(url, headers)
                 print("video_cnt:", video_cnt)
         flag += 1
     write_info_to_csv(res)
@@ -79,8 +88,8 @@ def main(page_num=3, threshold_score=3, flag=1, catalogue_url=None):
 if __name__ == '__main__':
     page_num = 5  # 设置爬取网页数upper bound，total 5
     flag = 1  # from which page begin
-    threshold_score = 5  # 设置下载视频阈值
-    IP_address = 'https://0118.workarea7.live/'
+    threshold_score = 6  # 设置下载视频阈值
+    IP_address = 'https://1028.workgreat11.live/'
     # IP_address = 'http://www.91porn.com'
     this_month_most_hot_page = IP_address + '/v.php?category=top&viewtype=basic&page='  # 本月最热视频展示页
     last_month_most_hot_page = IP_address + '/v.php?category=top&m=-1&viewtype=basic&page='  # 上月最热视频展示页
@@ -89,4 +98,4 @@ if __name__ == '__main__':
     this_month_collection_most = IP_address + '/v.php?category=tf&viewtype=basic&page='
     all_website_collection_most = IP_address + '/v.php?category=mf&viewtype=basic&page='
 
-    main(page_num=page_num, threshold_score=threshold_score, flag=flag, catalogue_url=last_month_most_hot_page)
+    main(page_num=page_num, threshold_score=threshold_score, flag=flag, catalogue_url=this_month_most_hot_page)
